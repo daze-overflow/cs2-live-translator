@@ -2,6 +2,8 @@
 
 用于 YouTube 英文 CS2 直播和回放的 Chrome 扩展。保留英文原声，在播放器内叠加中文字幕，可选显示英文识别文本。支持全屏、字幕样式调整，以及按当前标题或章节匹配队伍和选手词表。
 
+*A Chrome extension for local English-to-Chinese subtitles on YouTube CS2 streams and replays.*
+
 **当前版本为 0.6.2 实验版。** 上一句与当前句共用紧凑底板。换句时淡入淡出，同一句补充或定稿时只对改动的文字渐入。默认字幕端口 8765 被占用时使用备用端口 18765。队名、人名和短句仍可能误识别或误译。
 
 ## 首次安装
@@ -40,3 +42,16 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\install-native-host.ps
 .\.venv\Scripts\python.exe -X utf8 -m unittest discover -s tests
 npm test
 ```
+
+## 许可证与来源
+
+项目原创代码和文档使用 [MIT 许可证](LICENSE)。安装脚本从上游下载模型和运行库，相关组件遵循各自的授权条款。
+
+| 组件 | 上游许可证 |
+| --- | --- |
+| [NeMo-Speech.cpp v0.3.0](https://github.com/NVIDIA/NeMo-Speech.cpp/blob/v0.3.0/LICENSE) | Apache-2.0 |
+| [Nemotron Speech Streaming EN 0.6B](https://huggingface.co/nvidia/nemotron-speech-streaming-en-0.6b) | NVIDIA Open Model License |
+| [llama.cpp b11960](https://github.com/ggml-org/llama.cpp/blob/b11960/LICENSE) | MIT |
+| [Qwen3-4B-GGUF](https://huggingface.co/Qwen/Qwen3-4B-GGUF/tree/bc640142c66e1fdd12af0bd68f40445458f3869b) | Apache-2.0 |
+
+队伍、选手和术语的参考来源记录在[词表](backend/catalog.json)的 `sources` 字段。欢迎通过 [Issues](https://github.com/w1661884010-jpg/cs2-live-translator/issues) 提交问题或词表修正。报告字幕问题时，可以附上公开视频链接、时间点和预期译法。
