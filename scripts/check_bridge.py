@@ -3,16 +3,23 @@ import asyncio
 import json
 from pathlib import Path
 import struct
+import sys
 import time
 
 import aiohttp
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from native.host import ready_service
 
 
 async def main():
     config = json.loads((ROOT / "local-config.json").read_text())
-    url = f"http://127.0.0.1:{config['port']}/audio"
+    service = ready_service(config["port"])
+    if not service:
+        raise RuntimeError("Start the caption service before checking the bridge.")
+    base_url = f"http://127.0.0.1:{service['port']}"
+    url = f"{base_url}/audio"
     params = {"token": config["token"]}
     async with aiohttp.ClientSession(trust_env=False) as session:
         async with session.ws_connect(url, params=params) as ws:
@@ -30,7 +37,7 @@ async def main():
             await ws.send_json({"type": "finish"})
             assert (await ws.receive_json())["type"] == "finished"
         for _ in range(20):
-            async with session.get(f"http://127.0.0.1:{config['port']}/health") as response:
+            async with session.get(f"{base_url}/health") as response:
                 if not (await response.json())["active"]:
                     break
             await asyncio.sleep(.05)

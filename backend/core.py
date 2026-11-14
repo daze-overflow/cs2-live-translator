@@ -1,19 +1,89 @@
 """Terminology-preserving translation and bounded partial-hypothesis scheduling."""
 import asyncio
+from collections import deque
 from difflib import SequenceMatcher
 import re
 import time
 
 
-def caption_window(text, limit=16):
-    words = text.split()
-    start = max(0, len(words) - limit)
-    if start:
-        for index in range(start, len(words) - 3):
-            if words[index - 1].endswith((".", "!", "?", ";", ",")):
-                start = index
+class CaptionPacer:
+    """Accept a stable prefix once, then commit a clause or the ASR endpoint."""
+    joiners = {"but", "whereas", "because", "then"}
+    unfinished = {"a", "an", "the", "to", "of", "for", "in", "on", "with", "at", "and",
+                  "or", "but", "if", "that", "is", "are", "was", "were", "could", "would",
+                  "should", "can", "will", "their", "his", "her", "our", "behind", "like"}
+
+    def __init__(self):
+        self.cue = 0
+        self.drafted = False
+        self.reset()
+
+    def reset(self):
+        if self.drafted:
+            self.cue += 1
+        self.committed = []
+        self.previous = []
+        self.drafted = False
+
+    @classmethod
+    def boundary(cls, words, keys, stable, final):
+        # Leave a few words for the next cue when splitting without punctuation.
+        for end in range(4, min(stable, 16) + 1):
+            if (final or end < len(words)) and words[end - 1].endswith((".", "!", "?", ";")):
+                return end
+            if end >= 7 and stable - end >= 2 and len(words) - end >= 4 and (
+                words[end - 1].endswith(",") or keys[end] in cls.joiners
+            ):
+                return end
+        if stable >= 16 and len(words) >= 19:
+            return next((end for end in range(16, 10, -1)
+                         if keys[end - 1] not in cls.unfinished), 16)
+        return len(words) if final else 0
+
+    def push(self, text, final):
+        words = text.split()
+        keys = [word.casefold().rstrip(".,!?;:") for word in words]
+        start = len(self.committed)
+        if keys[:start] != self.committed:
+            # ASR can insert or remove words before a committed cue. Align to its
+            # last recognized word so a late correction doesn't shift the next cue.
+            blocks = SequenceMatcher(None, self.committed, keys, autojunk=False).get_matching_blocks()
+            last = blocks[-2] if len(blocks) > 1 else None
+            if last:
+                start = min(len(keys), last.b + start - last.a)
+
+        stable = len(keys) if final else next(
+            (i for i, (old, new) in enumerate(zip(self.previous, keys)) if old != new),
+            min(len(self.previous), len(keys)))
+        self.previous = keys
+        cues = []
+
+        def emit(end, committed):
+            cues.append({"utterance": self.cue, "text": " ".join(words[start:end]),
+                         "prefix": " ".join(words[max(0, start - 24):start]), "final": committed})
+
+        while start < stable:
+            length = self.boundary(words[start:], keys[start:], stable - start, final)
+            if not length:
                 break
-    return " ".join(words[start:]), " ".join(words[max(0, start - 16):start])
+            end = start + length
+            emit(end, True)
+            self.committed = keys[:end]
+            self.cue += 1
+            self.drafted = False
+            start = end
+
+        if final:
+            self.reset()
+        elif not self.drafted:
+            # The last word may still be a partial token even when repeated.
+            end = min(stable, len(keys) - 1, start + 12)
+            while end > start and keys[end - 1] in self.unfinished:
+                end -= 1
+            if end - start >= 5:
+                emit(end, False)
+                self.drafted = True
+        return cues
 
 
 class Glossary:
@@ -92,12 +162,12 @@ class Glossary:
 
 
 class LatestTranslator:
-    """One active job, a replaceable draft, and one protected final."""
+    """One active job, a replaceable draft, and a few protected finals."""
     def __init__(self, translate, emit, interval=0.45, min_draft_words=0):
         self.translate, self.emit, self.interval = translate, emit, interval
         self.min_draft_words = min_draft_words
         self.pending = None
-        self.final_pending = None
+        self.finals = deque(maxlen=3)
         self.version = 0
         self.wake = asyncio.Event()
         self.settled = asyncio.Event()
@@ -108,7 +178,8 @@ class LatestTranslator:
         self.translating = False
 
     def clear(self):
-        self.pending = self.final_pending = None
+        self.pending = None
+        self.finals.clear()
         self.version += 1
         self.generation += 1
         self.wake.clear()
@@ -118,12 +189,13 @@ class LatestTranslator:
     def submit(self, job):
         if not job.get("final") and len(job["text"].split()) < self.min_draft_words:
             return
-        if self.pending and self.pending[1].get("final") and self.pending[1]["utterance"] != job["utterance"]:
-            if self.final_pending:
-                self.missed_finals += 1
-            self.final_pending = self.pending
         self.version += 1
-        self.pending = (self.version, job)
+        if job.get("final"):
+            self.missed_finals += len(self.finals) == self.finals.maxlen
+            self.finals.append((self.version, job))
+            self.pending = None
+        else:
+            self.pending = (self.version, job)
         self.settled.clear()
         self.wake.set()
 
@@ -138,12 +210,11 @@ class LatestTranslator:
                 remaining = self.interval - (time.perf_counter() - previous)
                 if remaining > 0:
                     await asyncio.sleep(remaining)
-                if self.pending is None and self.final_pending is None:
+                if self.pending is None and not self.finals:
                     self.settled.set()
                     continue
-                if self.final_pending:
-                    version, job = self.final_pending
-                    self.final_pending = None
+                if self.finals:
+                    version, job = self.finals.popleft()
                 else:
                     version, job = self.pending
                     self.pending = None
@@ -151,17 +222,15 @@ class LatestTranslator:
                 self.translating = True
                 result = await self.translate(job)
                 self.translating = False
-                # An older final still belongs in history when a new utterance has begun.
-                older_final = job.get("final") and self.pending and job["utterance"] < self.pending[1]["utterance"]
                 continuing = (self.pending and job["utterance"] == self.pending[1]["utterance"]
                               and self.pending[1].get("full_text", self.pending[1]["text"]).startswith(
                                   job.get("full_text", job["text"])))
-                if generation == self.generation and (version == self.version or older_final or continuing):
+                if generation == self.generation and (version == self.version or job.get("final") or continuing):
                     outcome = self.emit(result)
                     if asyncio.iscoroutine(outcome):
                         await outcome
                     previous = time.perf_counter()
-                if self.pending is None and self.final_pending is None:
+                if self.pending is None and not self.finals:
                     self.settled.set()
                     self.wake.clear()
                 else:

@@ -2,6 +2,7 @@ import io
 import json
 from pathlib import Path
 import struct
+import urllib.error
 import tempfile
 import unittest
 from contextlib import nullcontext
@@ -34,8 +35,21 @@ class NativeHostTests(unittest.TestCase):
     def test_an_unrelated_health_endpoint_is_not_a_translation_service(self):
         with patch('native.host.urllib.request.build_opener') as opener:
             opener.return_value.open.return_value.__enter__.return_value = io.BytesIO(b'{"app_id":"other","ready":true}')
-            with self.assertRaisesRegex(RuntimeError, '其他程序'):
-                health(8765)
+            self.assertIsNone(health(8765))
+
+    def test_ready_fallback_is_reused_when_preferred_health_returns_404(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = self.root(directory)
+            with patch('native.host.urllib.request.build_opener') as opener, \
+                 patch('native.host.subprocess.Popen') as spawn:
+                opener.return_value.open.side_effect = [
+                    urllib.error.HTTPError('http://127.0.0.1:8765/health', 404, 'Not Found', {}, None),
+                    io.BytesIO(b'{"app_id":"cs2-live-translator","ready":true,"version":"0.6.1"}'),
+                ]
+                ready = start_backend(root, lambda _message: None)
+            self.assertEqual(ready['port'], 18765)
+            self.assertFalse(ready['started'])
+            spawn.assert_not_called()
 
     def root(self, directory):
         root = Path(directory)
@@ -60,7 +74,7 @@ class NativeHostTests(unittest.TestCase):
             progress = []
             process = Mock(pid=1234)
             process.poll.return_value = None
-            with patch('native.host.health', side_effect=[None, None, {"ready": True, "version": "0.6.0"}]), \
+            with patch('native.host.health', side_effect=[None, None, None, None, {"ready": True, "version": "0.6.1"}]), \
                  patch('native.host.startup_lock', return_value=nullcontext()), patch('native.host.attach_job'), \
                  patch('native.host.subprocess.Popen', return_value=process) as spawn:
                 result = start_backend(root, progress.append)

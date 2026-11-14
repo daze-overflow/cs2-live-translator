@@ -4,6 +4,7 @@ import json
 import math
 from pathlib import Path
 import secrets
+import socket
 import struct
 import time
 
@@ -11,7 +12,7 @@ from aiohttp import WSMsgType, web
 
 from .asr import NativeASR
 from .catalog import MatchVocabulary
-from .core import LatestTranslator, caption_window
+from .core import CaptionPacer, LatestTranslator
 from .qwen import QwenTranslator
 from .stream import EndpointStream
 from .timing import AudioClock
@@ -57,9 +58,9 @@ async def serve_socket(request):
         epoch = 0
         session_started = time.monotonic()
         packet_received_ms = asr_ms = 0
-        utterance = 0
+        pacer = CaptionPacer()
+        asr_utterance = 0
         sequence = 0
-        last_text = ""
         previous_text, previous_at = "", -100
 
         async def translate(job):
@@ -82,17 +83,16 @@ async def serve_socket(request):
                 log.write(json.dumps(result, ensure_ascii=False) + "\n")
 
         def process(events):
-            nonlocal utterance, sequence, last_text, previous_text, previous_at
+            nonlocal sequence, asr_utterance, previous_text, previous_at
             for event in events:
                 text = event["text"].strip()
-                if text and (text != last_text or event["final"]):
-                    if event["final"]:
-                        vocabulary.observe(text, time.monotonic() - session_started)
+                if text and event["final"]:
+                    vocabulary.observe(text, time.monotonic() - session_started)
+                for cue in pacer.push(text, event["final"]):
                     sequence += 1
-                    shown, prefix = caption_window(text)
-                    scheduler.submit({"seq": sequence, "utterance": utterance,
-                                      "text": shown, "full_text": text, "epoch": epoch,
-                                      "final": event["final"], "words": event["words"],
+                    prefix = cue.pop("prefix")
+                    scheduler.submit({**cue, "seq": sequence, "full_text": text, "epoch": epoch,
+                                      "asr_utterance": asr_utterance, "words": event["words"],
                                       "teams": list(vocabulary.active),
                                       "team_source": vocabulary.source,
                                       "context": prefix or (previous_text if event["audio_processed"] - previous_at < 8 else ""),
@@ -101,23 +101,22 @@ async def serve_socket(request):
                                       "packet_received_ms": packet_received_ms,
                                       "ingest_age_ms": round(clock.ingest_age_ms, 1), "asr_ms": round(asr_ms, 1),
                                       "asr_received_ms": time.time() * 1000})
-                    last_text = text
                 if event["final"]:
+                    asr_utterance += 1
                     if text:
                         previous_text = " ".join(text.split()[-24:])
                         previous_at = event["audio_processed"]
-                    utterance += 1
-                    last_text = ""
 
-        scheduler = LatestTranslator(translate, emit, min_draft_words=4)
+        scheduler = LatestTranslator(translate, emit)
         worker = asyncio.create_task(scheduler.run())
 
         async def reset(title=None, reset_clock=True):
-            nonlocal stream, clock, epoch, utterance, last_text, previous_text, previous_at, vocabulary
+            nonlocal stream, clock, epoch, asr_utterance, previous_text, previous_at, vocabulary
             epoch += 1
             scheduler.clear()
-            last_text, previous_text, previous_at = "", "", -100
-            utterance += 1
+            pacer.reset()
+            asr_utterance += 1
+            previous_text, previous_at = "", -100
             if title is not None:
                 vocabulary = MatchVocabulary(state["catalog"], data, title[:500], hello.get("names", [])[:50])
             await loop.run_in_executor(state["asr_pool"], stream.close)
@@ -181,8 +180,20 @@ async def serve_socket(request):
     return ws
 
 
-async def main():
-    config = local_config()
+def bind_caption_socket(preferred):
+    for port in dict.fromkeys((preferred, 18765)):
+        listener = socket.socket()
+        listener.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
+        try:
+            listener.bind(("127.0.0.1", port))
+        except OSError:
+            listener.close()
+        else:
+            return listener
+    raise RuntimeError(f"字幕端口 {preferred} 和 18765 均无法绑定。")
+
+
+async def run_backend(config, listener):
     print("Loading local models and warming up...", flush=True)
     loop = asyncio.get_running_loop()
     asr_pool = ThreadPoolExecutor(max_workers=1, thread_name_prefix="asr")
@@ -210,14 +221,14 @@ async def main():
         async def health(request):
             return web.json_response({"app_id": "cs2-live-translator", "ready": True,
                                       "active": state["active"], "model": "Qwen3-4B",
-                                      "version": "0.6.0", "roster_as_of": state["catalog"]["as_of"]})
+                                      "version": "0.6.2", "roster_as_of": state["catalog"]["as_of"]})
 
         app.router.add_get("/health", health)
         app.router.add_get("/audio", serve_socket)
         runner = web.AppRunner(app, access_log=None)
         await runner.setup()
-        await web.TCPSite(runner, "127.0.0.1", config["port"]).start()
-        print(f"READY http://127.0.0.1:{config['port']} (fully local)", flush=True)
+        await web.SockSite(runner, listener).start()
+        print(f"READY http://127.0.0.1:{listener.getsockname()[1]} (fully local)", flush=True)
         await asyncio.Event().wait()
     finally:
         if runner:
@@ -225,6 +236,12 @@ async def main():
         await translator.close()
         await loop.run_in_executor(asr_pool, asr.close)
         asr_pool.shutdown(wait=True)
+
+
+async def main():
+    config = local_config()
+    with bind_caption_socket(config["port"]) as listener:
+        await run_backend(config, listener)
 
 
 if __name__ == "__main__":

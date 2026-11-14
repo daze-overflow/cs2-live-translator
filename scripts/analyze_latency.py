@@ -33,7 +33,7 @@ epoch = clock["epoch_ms"]
 for utterance, source_word, source_phrase, target in TARGETS:
     word = next(word for word in references[utterance]["words"] if word["word"].casefold().rstrip(".") == source_word.casefold())
     source_end = epoch + offsets[utterance] * 1000 + word["end_ms"]
-    matches = [caption for caption in captions if caption["utterance"] == utterance
+    matches = [caption for caption in captions if caption.get("asr_utterance", caption["utterance"]) == utterance
                and (source_phrase.casefold() in caption["full_text"].casefold()
                     or target.isascii() and target.casefold() in caption.get("en", "").casefold())
                and target.casefold() in caption["zh"].casefold()]

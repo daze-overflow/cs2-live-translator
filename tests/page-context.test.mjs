@@ -21,6 +21,7 @@ function overlay() {
     chrome: { storage: { local: { get: async () => ({}) }, onChanged: { addListener: () => {} } },
       runtime: { sendMessage: async message => sent.push(message), onMessage: { addListener: () => {} } } },
     setInterval: callback => { interval = callback; }, clearTimeout() {},
+    matchMedia: () => ({ matches: true }),
   });
   const shared = new URL('../extension/page-context.js', import.meta.url);
   if (fs.existsSync(shared)) vm.runInContext(fs.readFileSync(shared, 'utf8'), context);

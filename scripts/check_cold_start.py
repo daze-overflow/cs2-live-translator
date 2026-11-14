@@ -11,7 +11,7 @@ import aiohttp
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from native.host import read_message, write_message
+from native.host import health, read_message, write_message
 
 
 def listening(port):
@@ -20,9 +20,9 @@ def listening(port):
         return probe.connect_ex(('127.0.0.1', port)) == 0
 
 
-async def wait_stopped():
+async def wait_stopped(port):
     for _ in range(40):
-        if not listening(8765) and not listening(8766):
+        if not listening(port) and not listening(8766):
             return
         await asyncio.sleep(.2)
     raise AssertionError('Owned model ports remain after host exit')
@@ -52,42 +52,44 @@ async def launch(origin, direct=False):
 
 
 async def main():
-    if listening(8765) or listening(8766):
+    config = json.loads((ROOT / 'local-config.json').read_text(encoding='utf-8'))
+    if health(config['port']) or health(18765) or listening(8766):
         raise RuntimeError('Cold-start check requires no existing backend; do not stop an unowned service.')
     manifest = json.loads((ROOT / 'native/com.cs2.live_translator.json').read_text(encoding='utf-8'))
     origin = manifest['allowed_origins'][0]
-    config = json.loads((ROOT / 'local-config.json').read_text(encoding='utf-8'))
+    extension = json.loads((ROOT / 'extension/manifest.json').read_text(encoding='utf-8'))
     process, ready, cold_ms = await launch(origin)
+    port = ready['port']
     try:
-        assert ready['started'] is True and ready['version'] == '0.6.0', ready
+        assert ready['started'] is True and ready['version'] == extension['version'], ready
         async with aiohttp.ClientSession(trust_env=False) as session:
-            async with session.get('http://127.0.0.1:8765/health') as response:
-                health = await response.json()
-                assert health['app_id'] == 'cs2-live-translator' and health['ready'], health
-            async with session.ws_connect('http://127.0.0.1:8765/audio', params={'token': config['token']}) as ws:
+            async with session.get(f'http://127.0.0.1:{port}/health') as response:
+                service_status = await response.json()
+                assert service_status['app_id'] == 'cs2-live-translator' and service_status['ready'], service_status
+            async with session.ws_connect(f'http://127.0.0.1:{port}/audio', params={'token': config['token']}) as ws:
                 await ws.send_json({'type': 'hello', 'title': 'MOUZ vs PARIVISION', 'names': []})
                 fixture = await ws.receive_json()
                 assert fixture['type'] == 'ready' and set(fixture['teams']) == {'MOUZ', 'PARIVISION'}, fixture
                 await ws.send_json({'type': 'finish'})
                 assert (await ws.receive_json())['type'] == 'finished'
         second, reused, warm_ms = await launch(origin)
-        assert reused['started'] is False, reused
+        assert reused['started'] is False and reused['port'] == port, reused
         second.stdin.close()
         await asyncio.to_thread(second.wait, 5)
-        assert listening(8765) and listening(8766), 'Reused host must leave the existing service alive'
+        assert listening(port) and listening(8766), 'Reused host must leave the existing service alive'
     finally:
         process.stdin.close()
         await asyncio.to_thread(process.wait, 10)
-    await wait_stopped()
+    await wait_stopped(port)
     print(json.dumps({'cold_ms': cold_ms, 'warm_ms': warm_ms, 'normal_exit_cleanup': True}), flush=True)
     hard, ready, second_cold_ms = await launch(origin, direct=True)
     subprocess.run(['taskkill', '/PID', str(ready['host_pid']), '/F'], check=True, capture_output=True,
                    creationflags=subprocess.CREATE_NO_WINDOW)
     await asyncio.to_thread(hard.wait, 10)
     hard.stdin.close()
-    await wait_stopped()
+    await wait_stopped(ready['port'])
     report = {'cold_start_ms': cold_ms, 'warm_reuse_ms': warm_ms, 'second_cold_start_ms': second_cold_ms,
-              'bridge_fixture': fixture['teams'], 'normal_exit_cleanup': True, 'hard_exit_cleanup': True,
+              'port': port, 'bridge_fixture': fixture['teams'], 'normal_exit_cleanup': True, 'hard_exit_cleanup': True,
               'scope': 'Actual installed host.cmd, local CUDA models, framed protocol and loopback bridge; Chrome connection/capture still requires extension reload.'}
     (ROOT / 'evidence/cold-start-check.json').write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding='utf-8')
     print(json.dumps(report, ensure_ascii=False), flush=True)

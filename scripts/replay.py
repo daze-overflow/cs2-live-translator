@@ -4,12 +4,15 @@ import asyncio
 import json
 from pathlib import Path
 import struct
+import sys
 import time
 import wave
 
 import aiohttp
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from native.host import ready_service
 
 
 async def main():
@@ -29,9 +32,12 @@ async def main():
             audio.extend(source.readframes(source.getnframes()))
         audio.extend(bytes(22400))  # 700ms gap for endpoint behavior.
     config = json.loads((ROOT / "local-config.json").read_text())
+    service = ready_service(config["port"])
+    if not service:
+        raise RuntimeError("Start the caption service before replaying audio.")
     results = []
     async with aiohttp.ClientSession(trust_env=False) as session:
-        async with session.ws_connect(f"http://127.0.0.1:{config['port']}/audio", params={"token": config["token"]}) as ws:
+        async with session.ws_connect(f"http://127.0.0.1:{service['port']}/audio", params={"token": config["token"]}) as ws:
             await ws.send_json({"type": "hello", "title": args.title,
                                 "names": [name.strip() for name in args.names.split(",") if name.strip()]})
             ready = await ws.receive_json()

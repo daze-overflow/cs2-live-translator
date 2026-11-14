@@ -1,11 +1,11 @@
 {
   "manifest_version": 3,
   "name": "CS2 Live Translator · 本地字幕",
-  "version": "0.6.0",
+  "version": "0.6.2",
   "description": "为 YouTube 英文 CS2 直播叠加本地翻译中文字幕，保留原声。",
   "minimum_chrome_version": "116",
   "permissions": ["activeTab", "tabCapture", "offscreen", "scripting", "storage", "nativeMessaging"],
-  "host_permissions": ["http://127.0.0.1:8765/*"],
+  "host_permissions": ["http://127.0.0.1:8765/*", "http://127.0.0.1:18765/*"],
   "background": {"service_worker": "service.js", "type": "module"},
   "action": {"default_popup": "popup.html", "default_title": "CS2 本地字幕"}
 }

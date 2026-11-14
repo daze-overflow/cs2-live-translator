@@ -109,24 +109,32 @@ def health(port):
     try:
         with opener.open(f'http://127.0.0.1:{port}/health', timeout=1) as response:
             data = json.load(response)
-    except (urllib.error.URLError, TimeoutError, ConnectionError):
+    except (urllib.error.URLError, TimeoutError, ConnectionError, ValueError):
         return None
-    if data.get('app_id') != 'cs2-live-translator':
-        raise RuntimeError('本机字幕端口被其他程序占用。')
-    return data if data.get('ready') is True else None
+    if isinstance(data, dict) and data.get('app_id') == 'cs2-live-translator' and data.get('ready') is True:
+        return data
+    return None
+
+
+def ready_service(preferred):
+    for port in dict.fromkeys((preferred, 18765)):
+        ready = health(port)
+        if ready:
+            return {"type": "ready", "port": port, "version": ready['version']}
+    return None
 
 
 def start_backend(root, send, timeout=120):
     global _job_handle
     port = json.loads((root / 'local-config.json').read_text(encoding='utf-8'))['port']
-    ready = health(port)
+    ready = ready_service(port)
     if ready:
-        return {"type": "ready", "started": False, "version": ready['version']}
+        return {**ready, "started": False}
     send({"type": "progress", "message": "正在加载本机翻译模型，首次启动请稍候…"})
     with startup_lock():
-        ready = health(port)
+        ready = ready_service(port)
         if ready:
-            return {"type": "ready", "started": False, "version": ready['version']}
+            return {**ready, "started": False}
         python = root / '.venv/Scripts/python.exe'
         if not python.is_file():
             raise RuntimeError('本机运行环境缺失，请运行一次 setup.ps1。')
@@ -138,9 +146,9 @@ def start_backend(root, send, timeout=120):
                                        creationflags=subprocess.CREATE_NO_WINDOW)
         deadline = time.monotonic() + timeout
         while time.monotonic() < deadline:
-            ready = health(port)
+            ready = ready_service(port)
             if ready:
-                return {"type": "ready", "started": True, "version": ready['version'], "pid": process.pid}
+                return {**ready, "started": True, "pid": process.pid}
             if process.poll() is not None:
                 raise RuntimeError('本机模型启动失败，详情见 evidence/startup.log；可点击重试。')
             time.sleep(.2)

@@ -12,16 +12,14 @@ function releaseLocalService() {
 }
 
 async function ensureLocalService(config) {
-  let health;
   try {
-    health = await fetch(`http://127.0.0.1:${config.port}/health`, { signal: AbortSignal.timeout(2500) });
-  } catch { /* No listener on cold start; let the native host load the models. */ }
-  if (health?.ok) {
-    const data = await health.json();
-    if (data.app_id !== "cs2-live-translator") throw new Error("本机字幕端口被其他程序占用。");
-    if (data.ready === true) return;
-  }
-  await new Promise((resolve, reject) => {
+    const health = await fetch(`http://127.0.0.1:${config.port}/health`, { signal: AbortSignal.timeout(2500) });
+    if (health.ok) {
+      const data = await health.json();
+      if (data.app_id === "cs2-live-translator" && data.ready === true) return config.port;
+    }
+  } catch { /* Let the native host locate or start the service. */ }
+  return new Promise((resolve, reject) => {
     const port = chrome.runtime.connectNative("com.cs2.live_translator");
     nativePort = port;
     const fail = message => { clearTimeout(timer); reject(new Error(message)); };
@@ -30,7 +28,15 @@ async function ensureLocalService(config) {
     }, 125000);
     port.onMessage.addListener(message => {
       if (message.type === "progress") startupStatus.message = message.message;
-      if (message.type === "ready") { clearTimeout(timer); resolve(); }
+      if (message.type === "ready") {
+        const port = message.port ?? config.port;
+        if (port !== config.port && port !== 18765) {
+          fail("本机启动器返回了无效的字幕端口。");
+          return;
+        }
+        clearTimeout(timer);
+        resolve(port);
+      }
       if (message.type === "error") fail(message.message);
     });
     port.onDisconnect.addListener(() => {
@@ -55,7 +61,7 @@ async function start(names) {
   activeTabId = tab.id;
   startupStatus = { starting: true, running: false, message: "正在准备本机翻译模型，请稍候…" };
   const config = await (await fetch(chrome.runtime.getURL("local-config.json"))).json();
-  await ensureLocalService(config);
+  config.port = await ensureLocalService(config);
   startupStatus.message = "模型已就绪，正在连接当前视频…";
   if (!(await chrome.offscreen.hasDocument())) {
     await chrome.offscreen.createDocument({ url: "offscreen.html", reasons: ["USER_MEDIA"],

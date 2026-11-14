@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 
-function service({ warm = false, foreign = false } = {}) {
-  let listener, removed, port, captures = 0, connections = 0, status = { running: false };
+function service({ warm = false, foreign = false, fallback = false } = {}) {
+  let listener, removed, port, capturePort, captures = 0, connections = 0, status = { running: false };
   const chrome = { runtime: {
     id: 'test-id', getURL: path => 'chrome-extension://test-id/' + path,
     onMessage: { addListener: callback => { listener = callback; } },
@@ -18,7 +18,7 @@ function service({ warm = false, foreign = false } = {}) {
       return port;
     },
     sendMessage: async message => {
-      if (message.type === 'start') { captures++; status = { running: true, tabId: 9 }; }
+      if (message.type === 'start') { captures++; capturePort = message.config.port; status = { running: true, tabId: 9 }; }
       if (message.type === 'stop') status = { running: false };
       return status;
     },
@@ -30,16 +30,17 @@ function service({ warm = false, foreign = false } = {}) {
   const context = vm.createContext({ chrome, setTimeout, clearTimeout, AbortSignal,
     fetch: async url => {
       if (url.includes('local-config.json')) return { json: async () => ({ port: 8765, token: 'test-only' }) };
+      if (fallback && url.includes(':8765/')) return { ok: false, status: 404 };
       if (!warm) throw new Error('offline');
       return { ok: true, json: async () => ({ ready: true, app_id: foreign ? 'other-app' : 'cs2-live-translator' }) };
     } });
   vm.runInContext(fs.readFileSync(new URL('../extension/service.js', import.meta.url), 'utf8'), context);
   return {
     chrome, get captures() { return captures; }, get connections() { return connections; },
-    get port() { return port; },
+    get port() { return port; }, get capturePort() { return capturePort; },
     send: (type, sender = { url: chrome.runtime.getURL('popup.html') }) => new Promise(resolve =>
       listener({ target: 'service', type, names: [] }, sender, resolve)),
-    ready: () => { warm = true; port.emit({ type: 'ready' }); },
+    ready: (selectedPort = 8765) => { warm = true; port.emit({ type: 'ready', port: selectedPort }); },
     fail: message => port.emit({ type: 'error', message }),
     removed: () => removed(9),
   };
@@ -119,9 +120,24 @@ test('a web content script cannot request a native backend launch', async () => 
   assert.equal(page.connections, 0);
 });
 
-test('an unrelated port listener is not accepted as a ready translation backend', async () => {
+test('an unrelated port listener sends Start to the native host', async t => {
   const page = service({ warm: true, foreign: true });
-  const result = await page.send('start');
-  assert.match(result.error, /其他程序/);
+  t.after(() => page.port?.disconnect());
+  const start = page.send('start');
+  await tick();
   assert.equal(page.captures, 0);
+  assert.equal(page.connections, 1);
+  page.ready(18765);
+  assert.equal((await start).running, true);
+  assert.equal(page.capturePort, 18765);
+});
+
+test('cold start uses the port chosen by the native host when the preferred port returns 404', async t => {
+  const page = service({ fallback: true });
+  t.after(() => page.port?.disconnect());
+  const start = page.send('start');
+  await tick();
+  page.ready(18765);
+  assert.equal((await start).running, true);
+  assert.equal(page.capturePort, 18765);
 });
