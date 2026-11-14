@@ -1,0 +1,983 @@
+{
+  "as_of": "2026-11-02",
+  "reviewed_on": "2026-11-05",
+  "sources": {
+    "hltv-2026-11-02": "https://www.hltv.org/ranking/teams/2026/november/2",
+    "tyloo-roster": "https://www.hltv.org/team/4863/tyloo",
+    "blast-terms": "https://blast.tv/article/key-terms-for-cs2-communication",
+    "refrag-terms": "https://refrag.gg/blog/counter-strike-jargon-50-key-terms-for-competitive-play/"
+  },
+  "notes": [
+    "Dated roster snapshot; a replay may contain older lineups. Manual names override scoped selection.",
+    "Players from incomplete rosters are retained without inventing missing players.",
+    "Aliases are conservative ASR spelling aids, not verified pronunciations."
+  ],
+  "teams": [
+    {
+      "name": "FURIA",
+      "aliases": [
+        "furia esports"
+      ],
+      "players": [
+        "FalleN",
+        "yuurih",
+        "YEKINDAR",
+        "KSCERATO",
+        "molodoy"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "Vitality",
+      "aliases": [
+        "team vitality"
+      ],
+      "players": [
+        "apEX",
+        "ropz",
+        "ZywOo",
+        "flameZ",
+        "mezii"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "Spirit",
+      "aliases": [
+        "team spirit"
+      ],
+      "players": [
+        "sh1ro",
+        "magixx",
+        "tN1R",
+        "zont1x",
+        "donk"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "MOUZ",
+      "aliases": [
+        "mousesports",
+        "mouse sports"
+      ],
+      "players": [
+        "torzsi",
+        "Spinx",
+        "xertioN",
+        "PR",
+        "xelex"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "Aurora",
+      "aliases": [],
+      "players": [
+        "XANTARES",
+        "woxic",
+        "Jimpphat",
+        "kyxsan",
+        "Wicadia"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "Falcons",
+      "aliases": [
+        "team falcons"
+      ],
+      "players": [
+        "karrigan",
+        "NiKo",
+        "TeSeS",
+        "m0NESY",
+        "kyousuke"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "BETBOOM",
+      "aliases": [
+        "bet boom",
+        "betboom team"
+      ],
+      "players": [
+        "Boombl4",
+        "zorte",
+        "S1ren",
+        "d1Ledez",
+        "Magnojez"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "FUT",
+      "aliases": [
+        "fut esports"
+      ],
+      "players": [
+        "SunPayus",
+        "xfl0ud",
+        "dem0n",
+        "Krabeni",
+        "dziugss"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "Nemiga",
+      "aliases": [],
+      "players": [
+        "KaiR0N-",
+        "Xant3r",
+        "robo",
+        "khaN",
+        "syph0"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "NAVI",
+      "aliases": [
+        "Natus Vincere",
+        "na vi"
+      ],
+      "players": [
+        "Aleksib",
+        "iM",
+        "b1t",
+        "w0nderful",
+        "makazze"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "G2",
+      "aliases": [
+        "g two"
+      ],
+      "players": [
+        "huNter-",
+        "NertZ",
+        "r1nkle",
+        "HeavyGod",
+        "MATYS"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "Legacy",
+      "aliases": [],
+      "players": [
+        "arT",
+        "dumau",
+        "latto",
+        "try"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": false
+    },
+    {
+      "name": "PARIVISION",
+      "aliases": ["PVISION"],
+      "players": [
+        "HObbit",
+        "FL1T",
+        "Jame",
+        "xiELO",
+        "zweih"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "MIBR",
+      "aliases": [
+        "made in brazil"
+      ],
+      "players": [
+        "LNZ",
+        "nqz",
+        "insani",
+        "venomzera",
+        "tomaszin"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "The MongolZ",
+      "aliases": [
+        "mongolz",
+        "the mongols",
+        "mongols"
+      ],
+      "players": [
+        "nin9",
+        "bLitz",
+        "Techno",
+        "910",
+        "cobrazera"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "1win",
+      "aliases": [
+        "one win"
+      ],
+      "players": [
+        "Ax1Le",
+        "nafany",
+        "BELCHONOKK",
+        "fame",
+        "ArtFr0st"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "9z",
+      "aliases": [
+        "nine z"
+      ],
+      "players": [
+        "max",
+        "dgt",
+        "meyern",
+        "luchov",
+        "HUASOPEEK"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "Liquid",
+      "aliases": [
+        "team liquid"
+      ],
+      "players": [
+        "NAF",
+        "EliGE",
+        "malbsMd",
+        "JT",
+        "Jorko"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "Astralis",
+      "aliases": [],
+      "players": [
+        "phzy",
+        "siuhy",
+        "Staehr",
+        "ryu",
+        "cmtry"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "FaZe",
+      "aliases": [
+        "faze clan"
+      ],
+      "players": [
+        "frozen",
+        "Twistzz",
+        "Neityu",
+        "jcobbb",
+        "JBOEN"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "M80",
+      "aliases": [
+        "m eighty"
+      ],
+      "players": [
+        "slaxz-",
+        "Swisher",
+        "s1n",
+        "JBa",
+        "Lake"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "Eternal Fire",
+      "aliases": [],
+      "players": [
+        "MisteM",
+        "regali",
+        "soulfly",
+        "Kvem",
+        "jottAAA"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "Ninjas in Pyjamas",
+      "aliases": [
+        "nip",
+        "ninjas in pajamas"
+      ],
+      "players": [
+        "stavn",
+        "sjuush",
+        "Krimbo",
+        "adamb",
+        "xKacpersky"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "GamerLegion",
+      "aliases": [],
+      "players": [
+        "REZ",
+        "shalfey",
+        "Tauson",
+        "FL4MUS",
+        "hypex"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "B8",
+      "aliases": [
+        "b eight"
+      ],
+      "players": [
+        "alex666",
+        "npl",
+        "kensizor",
+        "esenthial",
+        "s1zzi"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "HEROIC",
+      "aliases": [],
+      "players": [
+        "Brollan",
+        "nilo",
+        "susp",
+        "MartinezSa",
+        "Chr1zN"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "fnatic",
+      "aliases": [],
+      "players": [
+        "fEAR",
+        "jambo",
+        "jackasmo",
+        "cairne",
+        "mazay"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "Envy",
+      "aliases": [],
+      "players": [
+        "Maka",
+        "Lucky",
+        "misutaaa",
+        "Kursy",
+        "Graviti"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "magic",
+      "aliases": [],
+      "players": [
+        "MaSvAl",
+        "lattykk",
+        "sFade8",
+        "AW",
+        "tenzy"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "HOTU",
+      "aliases": [],
+      "players": [
+        "n0rb3r7",
+        "kade0",
+        "mizu",
+        "dwushka",
+        "frontales"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "DENDELE",
+      "aliases": [],
+      "players": [
+        "gafolo",
+        "koala",
+        "maxxkor",
+        "rdnzao",
+        "doc"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "Luminosity",
+      "aliases": [],
+      "players": [
+        "Rainwaker",
+        "afro",
+        "lux",
+        "yxngstxr",
+        "AZUWU"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "100 Thieves",
+      "aliases": [
+        "one hundred thieves",
+        "hundred thieves"
+      ],
+      "players": [
+        "device",
+        "rain",
+        "Gizmy",
+        "sirah",
+        "poiii"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "TYLOO",
+      "aliases": [
+        "ty loo",
+        "tylu"
+      ],
+      "players": [
+        "JamYoung",
+        "Jee",
+        "Mercury",
+        "Moseyuh",
+        "Zero"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "Alliance",
+      "aliases": [],
+      "players": [
+        "twist",
+        "eraa",
+        "bobeksde",
+        "upE",
+        "avid"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "NRG",
+      "aliases": [
+        "n r g"
+      ],
+      "players": [
+        "nitr0",
+        "Sonic",
+        "hallzerk",
+        "Grim",
+        "Jeorge"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "BIG",
+      "aliases": [
+        "big clan"
+      ],
+      "players": [
+        "tabseN",
+        "JDC",
+        "faveN",
+        "blameF",
+        "gr1ks"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "Inner Circle",
+      "aliases": [],
+      "players": [
+        "cptkurtka023",
+        "headtr1ck",
+        "zeRRoFIX",
+        "onic",
+        "Dawy"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "JiJieHao",
+      "aliases": [
+        "jijiehao"
+      ],
+      "players": [
+        "m1N1",
+        "sinnopsyy",
+        "Bibu",
+        "CacaNito",
+        "0SAMAS"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "SINNERS",
+      "aliases": [],
+      "players": [
+        "beastik",
+        "SHOCK",
+        "MoDo",
+        "kisserek",
+        "stressarN"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "Sangal",
+      "aliases": [],
+      "players": [
+        "adamS",
+        "bnox",
+        "puuha",
+        "R4DYX",
+        "Joey"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "5star",
+      "aliases": [],
+      "players": [
+        "NEUZ",
+        "rate",
+        "clouden",
+        "ariucle",
+        "hoolig4n"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "paiN",
+      "aliases": [],
+      "players": [
+        "biguzera",
+        "saffee",
+        "snow",
+        "Tatu",
+        "Rkzinho"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "Wildcard",
+      "aliases": [],
+      "players": [
+        "nEMANHA",
+        "Cxzi",
+        "reck",
+        "HexT",
+        "fr3nd"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "K27",
+      "aliases": [],
+      "players": [
+        "clax",
+        "X5G7V",
+        "xeedo",
+        "kashl1d",
+        "qw1nk1"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "Lynn Vision",
+      "aliases": [
+        "lynnvision"
+      ],
+      "players": [
+        "Westmelon",
+        "z4KR",
+        "Starry",
+        "EmiliaQAQ",
+        "C4LLM3SU3"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "BBL",
+      "aliases": [],
+      "players": [
+        "IceBerg",
+        "MistR",
+        "salazar",
+        "leakz",
+        "NickyB"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "PRIVATE",
+      "aliases": [],
+      "players": [
+        "1eeR",
+        "H4SAN4TOR",
+        "sowalio",
+        "sh1nejezzz",
+        "z1k4"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "BC.Game",
+      "aliases": [
+        "bc game"
+      ],
+      "players": [
+        "s1mple",
+        "Magisk",
+        "asap",
+        "Senzu",
+        "mzinho"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "Imperial",
+      "aliases": [],
+      "players": [
+        "chelo",
+        "VINI",
+        "decenty",
+        "noway",
+        "saadzin"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "Nemesis",
+      "aliases": [],
+      "players": [
+        "SELLTER",
+        "r3salt",
+        "mag1k3Y",
+        "tex1y",
+        "Sdaim"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "Virtus.pro",
+      "aliases": [
+        "virtus pro",
+        "vp"
+      ],
+      "players": [
+        "mir",
+        "b1st",
+        "F0R3VER",
+        "AquaRS",
+        "tO0RO"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "Iberian Soul",
+      "aliases": [],
+      "players": [
+        "alex",
+        "mopoz",
+        "sausol",
+        "dav1g"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": false
+    },
+    {
+      "name": "FOKUS",
+      "aliases": [],
+      "players": [
+        "ztr",
+        "Banjo",
+        "podi",
+        "jocab",
+        "Matheos"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "Nexus",
+      "aliases": [],
+      "players": [
+        "shield",
+        "fNk",
+        "s0und",
+        "Nexius",
+        "HOLY"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "Betclic",
+      "aliases": [],
+      "players": [
+        "Demho",
+        "Prism",
+        "ex1st",
+        "ultimate",
+        "Qlocuu"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "ShindeN",
+      "aliases": [],
+      "players": [
+        "tom1jed",
+        "abizz",
+        "ivz",
+        "naz",
+        "guty"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "Black Phoenix",
+      "aliases": [],
+      "players": [
+        "4X1s",
+        "karnez",
+        "topo",
+        "MRcreed",
+        "Salazar"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "BESTIA",
+      "aliases": [],
+      "players": [
+        "drop",
+        "kauez",
+        "cass1n",
+        "buda",
+        "timo"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "FlyQuest",
+      "aliases": [],
+      "players": [
+        "jks",
+        "aliStair",
+        "INS",
+        "Vexite",
+        "nettik"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    },
+    {
+      "name": "Rare Atom",
+      "aliases": [],
+      "players": [
+        "Summer",
+        "kaze",
+        "ChildKing",
+        "L1haNg",
+        "3gl"
+      ],
+      "source": "hltv-2026-11-02",
+      "roster_complete": true
+    }
+  ],
+  "player_aliases": {
+    "JamYoung": ["jam young", "jiam young"],
+    "m0NESY": [
+      "monesy", "monzi"
+    ],
+    "b1t": [
+      "bit"
+    ],
+    "w0nderful": [
+      "wonderful"
+    ],
+    "sh1ro": [
+      "shiro"
+    ],
+    "s1mple": [
+      "simple"
+    ],
+    "Boombl4": [
+      "boombl",
+      "boomich"
+    ],
+    "S1ren": [
+      "siren"
+    ],
+    "Ax1Le": [
+      "axile"
+    ],
+    "ArtFr0st": [
+      "artfrost"
+    ],
+    "FL1T": [
+      "flit"
+    ],
+    "r1nkle": [
+      "rinkle"
+    ],
+    "xfl0ud": [
+      "xfloud"
+    ],
+    "dem0n": [
+      "demon"
+    ],
+    "tN1R": [
+      "tnir"
+    ],
+    "nitr0": [
+      "nitro"
+    ],
+    "s1n": [
+      "sin"
+    ],
+    "n0rb3r7": [
+      "norbert"
+    ],
+    "huNter-": [
+      "hunter"
+    ],
+    "slaxz-": [
+      "slaxz"
+    ],
+    "KaiR0N-": [
+      "kairon"
+    ],
+    "Magisk": [
+      "magiski"
+    ]
+  },
+  "ambiguous_teams": [
+    "paiN", "Nexus", "HEROIC", "Nemesis", "SINNERS", "Wildcard", "Luminosity",
+    "BIG",
+    "magic",
+    "PRIVATE",
+    "Legacy",
+    "Envy",
+    "Alliance",
+    "Imperial",
+    "Spirit",
+    "Aurora"
+  ],
+  "ambiguous_players": [
+    "frozen", "twist", "robo", "koala", "doc", "afro", "lux", "avid", "rate", "shield", "fEAR", "drop",
+    "rain",
+    "device",
+    "Zero",
+    "zero",
+    "try",
+    "arT",
+    "max",
+    "fame",
+    "Lucky",
+    "Lake",
+    "Mercury",
+    "Sonic",
+    "Grim",
+    "SHOCK",
+    "stressarN",
+    "snow",
+    "AW",
+    "PR",
+    "JT",
+    "LNZ",
+    "nqz",
+    "nilo",
+    "asap",
+    "noway",
+    "INS",
+    "NAF",
+    "simple",
+    "wonderful",
+    "bit",
+    "sin",
+    "hunter",
+    "demon"
+  ]
+}

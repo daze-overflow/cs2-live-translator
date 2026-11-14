@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>CS2 字幕设置</title><link rel="stylesheet" href="popup.css"></head>
+<body><main>
+  <header><span class="mark" aria-hidden="true">CS2</span><div><h1>实时中文字幕</h1><p>英文原声 · 中英字幕 · 本机运行</p></div><span id="version"></span></header>
+  <section class="status" aria-live="polite"><div id="state" role="status">正在检查字幕状态…</div><div id="fixture">等待当前视频信息</div></section>
+  <button id="toggle" disabled>开始中文字幕</button>
+  <section class="settings" aria-labelledby="style-title">
+    <div class="section-heading"><h2 id="style-title">字幕样式</h2><button id="reset-style" class="secondary" type="button">恢复默认</button></div>
+    <div class="control"><label for="fontSize">字号</label><input id="fontSize" type="range" min="16" max="48" step="1"><output id="fontSize-value" for="fontSize"></output></div>
+    <div class="control"><label for="bottom">距底部</label><input id="bottom" type="range" min="0" max="60" step="1"><output id="bottom-value" for="bottom"></output></div>
+    <div class="control"><label for="width">字幕宽度</label><input id="width" type="range" min="50" max="96" step="1"><output id="width-value" for="width"></output></div>
+    <div class="control"><label for="backgroundOpacity">背景不透明度</label><input id="backgroundOpacity" type="range" min="0" max="100" step="1"><output id="backgroundOpacity-value" for="backgroundOpacity"></output></div>
+    <div class="control"><label for="textOpacity">文字不透明度</label><input id="textOpacity" type="range" min="0" max="100" step="1"><output id="textOpacity-value" for="textOpacity"></output></div>
+    <div class="option-row"><label for="align">对齐</label><select id="align"><option value="left">左侧</option><option value="center">居中</option><option value="right">右侧</option></select><label class="check"><input id="showEnglish" type="checkbox">显示英文行</label></div>
+    <div id="style-preview" aria-hidden="true"><div class="sample-line english">Opening kill</div><div class="sample-line">关键击杀</div></div>
+    <p id="save-state" class="hint">自动保存，当前字幕即时生效。0% 为完全透明。</p>
+  </section>
+  <details id="names-panel"><summary>补充选手和队伍 <span id="names-count"></span></summary>
+    <label for="names" class="field-label">可选，每行一个名称</label>
+    <textarea id="names" rows="3" placeholder="NiKo&#10;m0NESY&#10;NAVI" spellcheck="false"></textarea>
+    <p class="hint">优先使用当前章节的对阵。补充名称在下次启动字幕时使用。</p>
+  </details>
+  <details class="diagnostics"><summary>运行信息</summary><p id="metrics"></p></details>
+  <p class="privacy">音频仅在本机处理，不使用云端 API。</p>
+</main><script src="subtitle-style.js"></script><script src="popup.js"></script></body></html>

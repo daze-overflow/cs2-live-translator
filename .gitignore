@@ -1,0 +1,20 @@
+.venv/
+runtime/
+models/
+__pycache__/
+*.pyc
+/evidence/
+local-config.json
+native/com.cs2.live_translator.json
+
+# Local development and publishing checks
+/plan.md
+/checklist.md
+/context-notes.md
+/TOMORROW.md
+/.publish-check/
+/scripts/caption-preview.html
+/scripts/extension-preview-mock.js
+/scripts/preview_server.py
+/scripts/capture_public_sample.py
+/scripts/check_vocabulary_translation.py
