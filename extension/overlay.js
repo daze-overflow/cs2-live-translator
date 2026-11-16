@@ -9,15 +9,18 @@
       display:grid;grid-template-columns:minmax(0,1fr);justify-items:center;
       width:min(var(--caption-width,80%),34em,calc(100% - 16px));text-align:center;
       color:rgba(255,255,255,var(--text-alpha,1));
-      font:600 clamp(14px,4.4cqw,var(--font-size,24px))/1.26 'Microsoft YaHei',sans-serif;
-      text-shadow:0 1px 2px rgba(0,0,0,var(--text-alpha,1));line-break:strict}
-    .stack{display:grid;grid-template-columns:minmax(0,1fr);gap:4px;width:max-content;max-width:100%;
-      box-sizing:border-box;padding:4px 10px 5px;border-radius:5px;overflow:clip;
-      background:rgba(0,0,0,var(--background-alpha,1))}
+      font:700 clamp(14px,4.4cqw,var(--font-size,24px))/1.3 'Microsoft YaHei UI','Microsoft YaHei',sans-serif;
+      letter-spacing:.02em;line-break:strict;
+      text-shadow:0 1px 2px rgba(0,0,0,calc(var(--text-alpha,1)*.9)),0 0 8px rgba(0,0,0,calc(var(--text-alpha,1)*.5))}
+    .stack{display:grid;grid-template-columns:minmax(0,1fr);gap:.3em;width:max-content;max-width:100%;
+      box-sizing:border-box;padding:.32em .7em .38em;border-radius:.42em;overflow:clip;
+      background:rgba(8,10,13,var(--background-alpha,1));
+      box-shadow:0 0 0 1px rgba(255,255,255,calc(var(--background-alpha,1)*.07)),0 6px 20px rgba(0,0,0,calc(var(--background-alpha,1)*.35))}
     .cue{min-width:0;overflow-wrap:anywhere}
-    .previous{opacity:.78}
+    .previous{opacity:.55;font-size:.8em}
     .zh{text-wrap:balance}
-    .english{font-size:.69em;font-weight:400;line-height:1.2;opacity:.84}
+    .current{text-wrap:pretty}
+    .english{font:400 .62em/1.25 'Segoe UI',system-ui,sans-serif;letter-spacing:0;color:rgba(214,220,227,var(--text-alpha,1))}
     .exiting{position:absolute}
     .captions[data-align=left]{justify-items:start;text-align:left}
     .captions[data-align=right]{justify-items:end;text-align:right}
@@ -175,7 +178,7 @@
       retiring.style.left = `${oldestBefore.left - bounds.left}px`;
       retiring.style.width = `${oldestBefore.width}px`;
       captions.append(retiring);
-      retiring.animate([{ opacity: .78 }, { opacity: 0, transform: "translateY(-6px)" }],
+      retiring.animate([{ opacity: .55 }, { opacity: 0, transform: "translateY(-6px)" }],
         { duration: 120, easing: easeOut }).onfinish = () => {
           retiring.remove();
           if (exit === retiring) exit = null;
@@ -183,7 +186,7 @@
     }
     if (liveBefore) {
       roll = previous.animate([{ opacity: 1, transform: `translateY(${lift}px)` },
-        { opacity: .78, transform: "translateY(0)" }], { duration: 180, easing: easeOut });
+        { opacity: .55, transform: "translateY(0)" }], { duration: 180, easing: easeOut });
     }
     enter = live.animate([{ opacity: .3, transform: `translateY(${offset}px)` },
       { opacity: 1, transform: "translateY(0)" }], { duration: 180, easing: easeOut });

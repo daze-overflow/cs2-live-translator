@@ -96,3 +96,26 @@ class TranslationTests(unittest.IsolatedAsyncioTestCase):
         result = await translator.translate("monesy", Glossary({"m0NESY": ["monesy"]}, {}), "prior sentence")
         self.assertEqual(result["zh"], "m0NESY")
         self.assertEqual(result["en"], "m0NESY")
+
+    async def test_proper_names_and_context_terms_are_separated_in_prompt(self):
+        translator, payloads = self.translator(["Spirit在Mirage通过补枪赢下Major。"])
+        result = await translator.translate(
+            "Spirit win the major on Mirage with a trade.",
+            Glossary({"Spirit": [], "Mirage": []}, {"win the major": "Major"}, {"trade": "补枪"})
+        )
+        content = payloads[0]["messages"][-1]["content"]
+        self.assertIn("保留原词：Spirit、Mirage", content)
+        self.assertIn("术语参考：win the major=Major；trade=补枪", content)
+        self.assertFalse(result["untranslated"])
+        self.assertEqual(result["quality_retries"], 0)
+
+    async def test_meta_parenthetical_commentary_from_model_is_stripped(self):
+        translator, _ = self.translator(["我想给一个巨大的（可能指“巨大的欢迎”或“巨大的感谢”）"])
+        result = await translator.translate("I wanna give a huge", None)
+        self.assertEqual(result["zh"], "我想给一个巨大的")
+
+    async def test_preserved_event_names_do_not_trigger_untranslated_repair(self):
+        translator, payloads = self.translator(["Vitality在BLAST和IEM后冲击Major冠军。"])
+        result = await translator.translate("Vitality chase the major after BLAST and IEM.", None)
+        self.assertEqual(len(payloads), 1)
+        self.assertFalse(result["untranslated"])

@@ -31,7 +31,8 @@
     {
       "name": "Vitality",
       "aliases": [
-        "team vitality"
+        "team vitality",
+        "vituria"
       ],
       "players": [
         "apEX",
@@ -106,7 +107,8 @@
       "name": "BETBOOM",
       "aliases": [
         "bet boom",
-        "betboom team"
+        "betboom team",
+        "bat boom"
       ],
       "players": [
         "Boombl4",
@@ -867,6 +869,37 @@
     }
   ],
   "player_aliases": {
+    "KSCERATO": [
+      "caserato",
+      "kscerato"
+    ],
+    "YEKINDAR": [
+      "yakinder",
+      "yekinder",
+      "kindar"
+    ],
+    "molodoy": [
+      "molodoid",
+      "molodoi"
+    ],
+    "zont1x": [
+      "zontix"
+    ],
+    "magixx": [
+      "magix"
+    ],
+    "FL4MUS": [
+      "flamus"
+    ],
+    "Chr1zN": [
+      "chrizn"
+    ],
+    "d1Ledez": [
+      "diledez"
+    ],
+    "syph0": [
+      "sypho"
+    ],
     "JamYoung": ["jam young", "jiam young"],
     "m0NESY": [
       "monesy", "monzi"

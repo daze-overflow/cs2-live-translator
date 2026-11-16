@@ -100,6 +100,15 @@ class VocabularyTests(unittest.TestCase):
         self.assertIn("Magisk", vocabulary.glossary().names)
         self.assertIn("jL", vocabulary.hints())
 
+    def test_major_terms_and_furia_asr_aliases_are_handled_safely(self):
+        vocabulary = self.vocabulary("Spirit vs FURIA")
+        glossary = vocabulary.glossary()
+        text, _ = glossary.canonicalize("caserato yakinder and molodoid win the major")
+        self.assertEqual(text, "KSCERATO YEKINDAR and molodoy win the major")
+        self.assertIn("Major", glossary.preserve("Vitality win the major", "Vitality赢得大赛")["zh"])
+        self.assertEqual(glossary.preserve("a major mistake", "一个重大失误")["zh"], "一个重大失误")
+        self.assertEqual(glossary.preserve("visit refrag dot gg", "访问refrag.gg")["zh"], "访问refrag.gg")
+
 
 class EndpointTests(unittest.TestCase):
     def test_hint_refresh_preserves_undecoded_audio_and_absolute_word_times(self):

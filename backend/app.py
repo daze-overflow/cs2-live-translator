@@ -221,7 +221,7 @@ async def run_backend(config, listener):
         async def health(request):
             return web.json_response({"app_id": "cs2-live-translator", "ready": True,
                                       "active": state["active"], "model": "Qwen3-4B",
-                                      "version": "0.6.2", "roster_as_of": state["catalog"]["as_of"]})
+                                      "version": "0.6.4", "roster_as_of": state["catalog"]["as_of"]})
 
         app.router.add_get("/health", health)
         app.router.add_get("/audio", serve_socket)
